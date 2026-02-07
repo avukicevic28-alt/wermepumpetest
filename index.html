@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="sr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kalkulator toplotne pumpe</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>Kalkulator i konfigurator toplotne pumpe</h1>
+        <p>
+          Unesite osnovne parametre objekta i dobićete preporuku snage, tipa
+          sistema i okvirne godišnje potrošnje električne energije.
+        </p>
+      </header>
+
+      <section class="card">
+        <h2>Podaci o objektu</h2>
+        <form id="heatPumpForm">
+          <div class="grid">
+            <label>
+              Površina objekta (m²)
+              <input type="number" id="area" min="20" max="1000" value="120" required />
+            </label>
+
+            <label>
+              Godina izgradnje
+              <input type="number" id="year" min="1900" max="2026" value="2008" required />
+            </label>
+
+            <label>
+              Visina plafona (m)
+              <input
+                type="number"
+                id="ceilingHeight"
+                min="2.2"
+                max="4"
+                step="0.1"
+                value="2.7"
+                required
+              />
+            </label>
+
+            <label>
+              Klimatska zona
+              <select id="climateZone">
+                <option value="blaga">Blaga (primorje)</option>
+                <option value="umerena" selected>Umerena (veći deo Srbije)</option>
+                <option value="hladna">Hladna (planinska područja)</option>
+              </select>
+            </label>
+
+            <label>
+              Nivo izolacije
+              <select id="insulation">
+                <option value="slaba">Slaba</option>
+                <option value="srednja" selected>Srednja</option>
+                <option value="dobra">Dobra</option>
+                <option value="pasivna">Pasivna kuća</option>
+              </select>
+            </label>
+
+            <label>
+              Broj članova domaćinstva
+              <input type="number" id="occupants" min="1" max="10" value="4" required />
+            </label>
+
+            <label>
+              Projektna unutrašnja temperatura (°C)
+              <input type="number" id="indoorTemp" min="18" max="25" value="21" required />
+            </label>
+
+            <label>
+              Sistem grejanja
+              <select id="heatingSystem">
+                <option value="podno" selected>Podno grejanje</option>
+                <option value="radijatori_nisko">Niskotemperaturni radijatori</option>
+                <option value="radijatori_visoko">Klasični radijatori</option>
+                <option value="fan_coil">Fan-coil jedinice</option>
+              </select>
+            </label>
+
+            <label>
+              Tip toplotne pumpe
+              <select id="pumpType">
+                <option value="vazduh_voda" selected>Vazduh-voda</option>
+                <option value="zemlja_voda">Zemlja-voda</option>
+                <option value="voda_voda">Voda-voda</option>
+              </select>
+            </label>
+
+            <label>
+              Da li želite i pripremu PTV?
+              <select id="dhw">
+                <option value="da" selected>Da</option>
+                <option value="ne">Ne</option>
+              </select>
+            </label>
+
+            <label>
+              Cena električne energije (€/kWh)
+              <input type="number" id="priceKwh" min="0.05" max="0.5" step="0.01" value="0.12" required />
+            </label>
+          </div>
+
+          <div class="actions">
+            <button type="submit">Izračunaj konfiguraciju</button>
+            <button type="button" id="saveBtn" class="secondary">Sačuvaj konfiguraciju</button>
+            <button type="button" id="exportBtn" class="secondary">Izvezi JSON</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card" id="dashboard" aria-live="polite">
+        <h2>Dashboard</h2>
+        <p class="note">Osnovne informacije i ključni pokazatelji za trenutnu konfiguraciju.</p>
+        <div class="dashboard-grid">
+          <article class="kpi-card">
+            <h3>Objekat</h3>
+            <p class="kpi-main" id="kpiObject">120 m² · 2.7 m</p>
+            <p class="kpi-sub" id="kpiProfile">2008 · srednja izolacija · umerena klima</p>
+          </article>
+
+          <article class="kpi-card">
+            <h3>Preporučena snaga pumpe</h3>
+            <p class="kpi-main" id="kpiPower">-</p>
+            <p class="kpi-sub" id="kpiPump">Tip pumpe: -</p>
+          </article>
+
+          <article class="kpi-card">
+            <h3>Sezonska efikasnost</h3>
+            <p class="kpi-main" id="kpiCop">-</p>
+            <p class="kpi-sub" id="kpiSystem">Sistem grejanja: -</p>
+          </article>
+
+          <article class="kpi-card">
+            <h3>Godišnji trošak</h3>
+            <p class="kpi-main" id="kpiCost">-</p>
+            <p class="kpi-sub" id="kpiConsumption">Potrošnja: -</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card result" id="result" hidden>
+        <h2>Preporuka sistema</h2>
+        <div id="resultContent"></div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
