@@ -17,13 +17,19 @@ Jednostavna web aplikacija za privatna domaćinstva koja računa okvirnu potrebn
 
 Pošto je aplikacija statička, dovoljno je otvoriti `index.html` u browseru.
 
-Ako želite lokalni server:
+Preporučeni lokalni server (sa fallback-om da ne dobijate "Not Found" na rutama):
+
+```bash
+python3 server.py
+```
+
+Zatim otvorite: <http://localhost:8000>
+
+Alternativno (klasično statičko serviranje):
 
 ```bash
 python3 -m http.server 8000
 ```
-
-Zatim otvorite: <http://localhost:8000>
 
 ## Napomena
 
