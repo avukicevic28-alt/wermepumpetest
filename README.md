@@ -5,6 +5,7 @@ Jednostavna web aplikacija za privatna domaćinstva koja računa okvirnu potrebn
 ## Funkcionalnosti
 
 - unos ključnih parametara objekta (površina, izolacija, klimatska zona, tip grejnog sistema)
+- dashboard sa osnovnim KPI informacijama (objekat, snaga, SCOP, godišnji trošak)
 - procena projektnih toplotnih gubitaka
 - preporuka nominalne snage toplotne pumpe
 - procena godišnje potrošnje električne energije i troška

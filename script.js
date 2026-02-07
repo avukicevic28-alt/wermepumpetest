@@ -28,6 +28,19 @@ const systemTempPenalty = {
   fan_coil: 0.95
 };
 
+const insulationLabel = {
+  slaba: 'slaba izolacija',
+  srednja: 'srednja izolacija',
+  dobra: 'dobra izolacija',
+  pasivna: 'pasivna kuća'
+};
+
+const climateLabel = {
+  blaga: 'blaga klima',
+  umerena: 'umerena klima',
+  hladna: 'hladna klima'
+};
+
 const systemName = {
   podno: 'Podno grejanje',
   radijatori_nisko: 'Niskotemperaturni radijatori',
@@ -42,9 +55,8 @@ const pumpName = {
 };
 
 function readFormData() {
-  const data = new FormData(form);
   return {
-    area: Number(data.get('area') || document.getElementById('area').value),
+    area: Number(document.getElementById('area').value),
     year: Number(document.getElementById('year').value),
     ceilingHeight: Number(document.getElementById('ceilingHeight').value),
     climateZone: document.getElementById('climateZone').value,
@@ -68,12 +80,11 @@ function calculate(config) {
 
   const dhwLoadKw = config.dhw === 'da' ? 0.35 * config.occupants : 0;
   const nominalPowerKw = (designLoadKw + dhwLoadKw) * 1.15;
-
   const correctedCop = pumpCop[config.pumpType] * systemTempPenalty[config.heatingSystem];
 
   const annualHeatDemandKwh =
     config.area * (config.climateZone === 'hladna' ? 165 : config.climateZone === 'umerena' ? 130 : 105) *
-    insulationLossFactor[config.insulation] +
+      insulationLossFactor[config.insulation] +
     (config.dhw === 'da' ? config.occupants * 750 : 0);
 
   const annualElectricityKwh = annualHeatDemandKwh / correctedCop;
@@ -81,7 +92,11 @@ function calculate(config) {
 
   const bufferTankLiters = Math.round(nominalPowerKw * 18);
   const recommendedSupplyTemp =
-    config.heatingSystem === 'podno' ? '30–35°C' : config.heatingSystem === 'radijatori_nisko' ? '40–45°C' : '50–55°C';
+    config.heatingSystem === 'podno'
+      ? '30–35°C'
+      : config.heatingSystem === 'radijatori_nisko'
+        ? '40–45°C'
+        : '50–55°C';
 
   return {
     designLoadKw,
@@ -95,11 +110,31 @@ function calculate(config) {
   };
 }
 
+function updateDashboard(config, values = null) {
+  const metrics = values || calculate(config);
+
+  document.getElementById('kpiObject').textContent = `${config.area} m² · ${config.ceilingHeight.toFixed(1)} m`;
+  document.getElementById('kpiProfile').textContent = `${config.year} · ${insulationLabel[config.insulation]} · ${climateLabel[config.climateZone]}`;
+
+  document.getElementById('kpiPower').textContent = `${metrics.nominalPowerKw.toFixed(1)} kW`;
+  document.getElementById('kpiPump').textContent = `Tip pumpe: ${pumpName[config.pumpType]}`;
+
+  document.getElementById('kpiCop').textContent = `SCOP ${metrics.correctedCop.toFixed(2)}`;
+  document.getElementById('kpiSystem').textContent = `Sistem grejanja: ${systemName[config.heatingSystem]}`;
+
+  document.getElementById('kpiCost').textContent = `${metrics.annualCost.toFixed(0)} € / god`;
+  document.getElementById('kpiConsumption').textContent = `Potrošnja: ${Math.round(metrics.annualElectricityKwh)} kWh`;
+}
+
 function renderResult(config, values) {
   resultSection.hidden = false;
 
   const efficiencyBadge =
-    values.correctedCop > 4 ? '<span class="badge">Vrlo efikasno</span>' : values.correctedCop > 3 ? '<span class="badge">Efikasno</span>' : '';
+    values.correctedCop > 4
+      ? '<span class="badge">Vrlo efikasno</span>'
+      : values.correctedCop > 3
+        ? '<span class="badge">Efikasno</span>'
+        : '';
 
   resultContent.innerHTML = `
     <p>
@@ -137,9 +172,7 @@ function loadConfiguration() {
   const config = JSON.parse(raw);
   Object.entries(config).forEach(([key, value]) => {
     const field = document.getElementById(key);
-    if (field) {
-      field.value = value;
-    }
+    if (field) field.value = value;
   });
 }
 
@@ -173,10 +206,16 @@ form.addEventListener('submit', (event) => {
   event.preventDefault();
   const config = readFormData();
   const values = calculate(config);
+  updateDashboard(config, values);
   renderResult(config, values);
+});
+
+form.addEventListener('input', () => {
+  updateDashboard(readFormData());
 });
 
 document.getElementById('saveBtn').addEventListener('click', saveConfiguration);
 document.getElementById('exportBtn').addEventListener('click', exportConfiguration);
 
 loadConfiguration();
+updateDashboard(readFormData());

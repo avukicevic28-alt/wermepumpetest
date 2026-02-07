@@ -44,7 +44,8 @@ header p {
   margin-bottom: 1rem;
 }
 
-.grid {
+.grid,
+.dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 0.9rem;
@@ -102,6 +103,32 @@ button:hover {
 button.secondary {
   background: #e5efff;
   color: #0b3d91;
+}
+
+.kpi-card {
+  border: 1px solid #e8eef8;
+  border-radius: 12px;
+  padding: 0.9rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.kpi-card h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+.kpi-main {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.kpi-sub {
+  margin: 0.3rem 0 0;
+  color: #64748b;
+  font-size: 0.86rem;
 }
 
 .result ul {
